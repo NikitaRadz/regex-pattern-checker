@@ -17,7 +17,8 @@
         {
           "id": "regexPatternChecker",
           "name": "Regex Checker",
-          "type": "webview"
+          "type": "webview",
+          "icon": "public/icon.svg"
         }
       ]
     },
