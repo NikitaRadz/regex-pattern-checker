@@ -12,6 +12,15 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "regexPatternChecker",
+          "name": "Regex Checker",
+          "type": "webview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "regex-pattern-checker.helloWorld",
