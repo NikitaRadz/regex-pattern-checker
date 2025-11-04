@@ -12,22 +12,24 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "contributes": {
-    "views": {
-      "explorer": [
+    "viewsContainers": {
+      "activitybar": [
         {
-          "id": "regexPatternChecker",
-          "name": "Regex Checker",
-          "type": "webview",
+          "id": "regex-pattern-checker-container",
+          "title": "Regex Checker",
           "icon": "public/icon.svg"
         }
       ]
     },
-    "commands": [
-      {
-        "command": "regex-pattern-checker.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "views": {
+      "regex-pattern-checker-container": [
+        {
+          "id": "regexPatternChecker",
+          "name": "Regex Checker",
+          "type": "webview"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

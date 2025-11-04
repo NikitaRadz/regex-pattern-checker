@@ -42,16 +42,19 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 						localResourceRoots: [this.context.extensionUri],
 				};
 
+				// Set the header title shown in the view
+				webviewView.title = 'Regex Checker';
+
 				webviewView.webview.html = this.getHtmlForWebview(webviewView.webview);
 		}
 
 		private getHtmlForWebview(webview: vscode.Webview): string {
-				const nonce = getNonce();
+				const numberOnce = getNumberOnce();
 				const csp = [
 						"default-src 'none'",
 						"img-src https: data:",
 						`style-src 'unsafe-inline' ${webview.cspSource}`,
-						`script-src 'nonce-${nonce}'`,
+						`script-src 'numberOnce-${numberOnce}'`,
 				].join('; ');
 
 				return `<!DOCTYPE html>
@@ -62,30 +65,19 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Regex Checker</title>
 	<style>
-		:root {
-			--vscode-foreground: var(--vscode-editor-foreground);
-			--vscode-input-background: var(--vscode-input-background);
-			--vscode-input-foreground: var(--vscode-input-foreground);
-			--vscode-button-background: var(--vscode-button-background);
-			--vscode-button-foreground: var(--vscode-button-foreground);
-			--vscode-button-hoverBackground: var(--vscode-button-hoverBackground);
-			--vscode-badge-background: var(--vscode-badge-background);
-			--vscode-badge-foreground: var(--vscode-badge-foreground);
-			--border: 1px solid var(--vscode-panel-border);
-		}
-		body { color: var(--vscode-foreground); font-family: var(--vscode-font-family, sans-serif); padding: 0.75rem; }
+		body { color: var(--vscode-editor-foreground); font-family: var(--vscode-font-family, sans-serif); padding: 0.75rem; }
 		.field { margin-bottom: 0.75rem; }
 		label { display: block; font-weight: 600; margin-bottom: 0.25rem; }
 		input[type="text"], textarea {
 			width: 100%; box-sizing: border-box; padding: 0.5rem; background: var(--vscode-input-background);
-			color: var(--vscode-input-foreground); border: var(--border); border-radius: 4px; font-family: inherit;
+			color: var(--vscode-input-foreground); border: 1px solid var(--vscode-panel-border); border-radius: 4px; font-family: inherit;
 		}
 		.row { display: flex; gap: 0.5rem; align-items: center; }
 		.row .grow { flex: 1 1 auto; }
 		.muted { opacity: 0.8; font-size: 0.9em; }
-		.result { margin-top: 0.75rem; padding: 0.5rem; border: var(--border); border-radius: 4px; }
+		.result { margin-top: 0.75rem; padding: 0.5rem; border: 1px solid var(--vscode-panel-border); border-radius: 4px; }
 		.bad { color: #f14c4c; }
-		.good { color: #28ea1eff; }
+		.good { color: #89d185; }
 		.preview { margin-top: 0.5rem; padding: 0.5rem; background: var(--vscode-editor-inactiveSelectionBackground, rgba(128,128,128,0.15)); border-radius: 4px; white-space: pre-wrap; word-break: break-word; }
 		mark { background: #c5e47866; border-bottom: 2px solid #c5e478; }
 		.badge { background: var(--vscode-badge-background); color: var(--vscode-badge-foreground); padding: 0 6px; border-radius: 10px; margin-left: 6px; }
@@ -107,7 +99,7 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 		<div id="status" class="result muted">Waiting for input…</div>
 		<div id="preview" class="preview" hidden></div>
 
-		<script nonce="${nonce}">
+		<script numberOnce="${numberOnce}">
 			const $ = (sel) => document.querySelector(sel);
 			const patternEl = $('#pattern');
 			const flagsEl = $('#flags');
@@ -120,7 +112,7 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 					.replace(/&/g, '&amp;')
 					.replace(/</g, '&lt;')
 					.replace(/>/g, '&gt;')
-					.replace(/"/g, '&quot;')
+					.replace(/\"/g, '&quot;')
 					.replace(/'/g, '&#39;');
 			}
 
@@ -148,16 +140,16 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 					return;
 				}
 
-						const matches = [...text.matchAll(re)];
-						if (matches.length === 0) {
-							const badge = flags ? ' <span class="badge">/' + escapeHtml(pattern) + '/' + escapeHtml(flags) + '</span>' : '';
-							statusEl.innerHTML = '<span class="bad">No match</span>' + badge;
-							previewEl.hidden = true;
-							return;
-						}
+				const matches = [...text.matchAll(re)];
+				if (matches.length === 0) {
+					const badgeNone = flags ? ' <span class="badge">/' + escapeHtml(pattern) + '/' + escapeHtml(flags) + '</span>' : '';
+					statusEl.innerHTML = '<span class="bad">No match</span>' + badgeNone;
+					previewEl.hidden = true;
+					return;
+				}
 
-						const badge = flags ? ' <span class="badge">/' + escapeHtml(pattern) + '/' + escapeHtml(flags) + '</span>' : '';
-						statusEl.innerHTML = '<span class="good">' + matches.length + ' match' + (matches.length === 1 ? '' : 'es') + '</span>' + badge;
+				const badge = flags ? ' <span class="badge">/' + escapeHtml(pattern) + '/' + escapeHtml(flags) + '</span>' : '';
+				statusEl.innerHTML = '<span class="good">' + matches.length + ' match' + (matches.length === 1 ? '' : 'es') + '</span>' + badge;
 
 				// Build highlighted preview
 				let html = '';
@@ -187,7 +179,7 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 		}
 }
 
-function getNonce() {
+function getNumberOnce() {
 		let text = '';
 		const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		for (let i = 0; i < 32; i++) {
