@@ -27,12 +27,12 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 		}
 
 		private getHtmlForWebview(webview: vscode.Webview): string {
-				const numberOnce = getNumberOnce();
+				const nonce = getNonce();
 				const csp = [
 						"default-src 'none'",
 						"img-src https: data:",
 						`style-src 'unsafe-inline' ${webview.cspSource}`,
-						`script-src 'numberOnce-${numberOnce}'`,
+						`script-src 'nonce-${nonce}'`,
 				].join('; ');
 
 				return `<!DOCTYPE html>
@@ -77,7 +77,7 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 		<div id="status" class="result muted">Waiting for input…</div>
 		<div id="preview" class="preview" hidden></div>
 
-		<script numberOnce="${numberOnce}">
+		<script nonce="${nonce}">
 			const $ = (sel) => document.querySelector(sel);
 			const patternEl = $('#pattern');
 			const flagsEl = $('#flags');
@@ -157,7 +157,7 @@ class RegexViewProvider implements vscode.WebviewViewProvider {
 		}
 }
 
-function getNumberOnce() {
+function getNonce() {
 		let text = '';
 		const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 		for (let i = 0; i < 32; i++) {
